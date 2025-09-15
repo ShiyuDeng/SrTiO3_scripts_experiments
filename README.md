@@ -3,11 +3,14 @@
 
 Useful python scripts to deal with the STO experimental data :)
 
+Rawdata format:
+IN8, ILL
+
 ### Workflow
 
 1. Merge Multiple Scan RawData file
-  example usage:  ``` $ python3 main_mergy.py input.py ```
-  Input example (input.py): 
+  example usage:  ``` $ python3 main_mergy.py input_merge.py ```
+  Input example (input_merge.py): 
     ```
     file_list = ["042802","042807"]
     file_dir = "./rawdata"
@@ -29,3 +32,8 @@ phonon dispersion (E(q)) convoluted with TAS resolutions
 - fitted data from Takin2.0 output
 
 ``` $ python3 INSpy_main.py input_analysis.py ```
+
+---
+Last updated:
+2025-09-15
+Shiyu DENG (dengs@ill.fr)
