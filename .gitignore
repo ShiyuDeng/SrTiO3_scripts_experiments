@@ -1,0 +1,9 @@
+*~
+*#
+
+# Python
+__pycache__/
+*.pyc
+# Other common files to ignore
+.DS_Store
+.vscode/ 
