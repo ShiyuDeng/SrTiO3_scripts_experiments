@@ -1,10 +1,36 @@
-### functions ###
-### merge the INS scan data by constant Q or E ###
+"""
+functions to read/merge/plot INS data
+Last updated: Sept 2025
+License: GNU-V2
+Author: [Shiyu Deng]
+Email:[dengs@ill.fr] or [sd864@cantab.ac.uk]
+"""
+#####################################################
+################## functions ########################
+### 1. read input.py file                         ###
+### 2. merge the INS scan data by constant Q or E ###
+### 3. read the INS data and plot                 ###
+#####################################################
 
 import pandas as pd
 import os
 import numpy as np
+import importlib.util
+
 from MergeRule import merge_rules_QH, merge_rules_EN
+
+###########  read input.py file  #################
+def load_config_from_file(filepath):
+    """
+    Dynamically loads configuration from a specified Python file.
+    Here. the 'inpput.py' for different analysis tasks
+    """
+    spec = importlib.util.spec_from_file_location("input_module", filepath)
+    input_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(input_module)
+    return input_module
+########### END -  read input.py file  #################
+
 
 ###### group constant QH or EN scans #####
 def merge_data(file_list, file_dir, save_file, save_dir,

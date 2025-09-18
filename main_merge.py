@@ -1,18 +1,15 @@
-from functions import *
+"""
+Python3 Script to merge multiple scans for INS data collected at ILL
 
-import pandas as pd
+Last updated: Sept 2025
+License: GNU-V2
+Author: [Shiyu Deng]
+Email:[dengs@ill.fr] or [sd864@cantab.ac.uk]
+"""
+
+from functions import *
 import sys
 import os
-import importlib.util
-
-def load_config_from_file(filepath):
-    """
-    Dynamically loads configuration from a specified Python file.
-    """
-    spec = importlib.util.spec_from_file_location("input_module", filepath)
-    input_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(input_module)
-    return input_module
 
 def main():
     # Check for command-line argument

@@ -1,3 +1,13 @@
+"""
+Python3 Script to merge multiple scans for INS data collected at ILL
+- merge rule
+
+Last updated: Sept 2025
+License: GNU-V2
+Author: [Shiyu Deng]
+Email:[dengs@ill.fr] or [sd864@cantab.ac.uk]
+"""
+
 merge_rules_QH = {
     'key_columns': ['QH'],
     'value_columns': {
