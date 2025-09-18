@@ -1,5 +1,4 @@
-# SrTiO3_scripts_experiments
-
+# TAS-INS Phonon Measurement Python Scripts
 
 Useful python scripts to deal with the STO experimental data :)
 
