@@ -27,10 +27,11 @@ IN8, ILL
 phonon dispersion (E(q)) convoluted with TAS resolutions 
 
 3. Summary Plot:
+Load data from
 - original data from main_merge.py
 - fitted data from Takin2.0 output
-
-``` $ python3 INSpy_main.py input_analysis.py ```
+Plot the datasets (if exists) in 2D or 3D. 
+``` $ python3 INSpy_main.py -in input_analysis.py -plot 3D ```
 
 ---
 Last updated:
