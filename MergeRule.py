@@ -27,8 +27,8 @@ merge_rules_QH = {
         'QM': 'first',
         'TT': 'first',
         'TRT': 'first',
-        'GU': 'first',
-        'GL': 'first',
+        #'GU': 'first',
+        #'GL': 'first',
         'tolerance_bins': 'first'
     }
 }
@@ -53,8 +53,8 @@ merge_rules_EN = {
         'QM': 'first',
         'TT': 'first',
         'TRT': 'first',
-        'GU': 'first',
-        'GL': 'first',
+        #'GU': 'first',
+        #'GL': 'first',
         'tolerance_bins': 'first'
     }
 }

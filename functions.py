@@ -15,6 +15,8 @@ Email:[dengs@ill.fr] or [sd864@cantab.ac.uk]
 import pandas as pd
 import os
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import importlib.util
 
 from MergeRule import merge_rules_QH, merge_rules_EN
@@ -104,3 +106,105 @@ def merge_data(file_list, file_dir, save_file, save_dir,
         f.write(processed_df.to_string(index=False, header=True, justify='left', col_space=10))
     
     print(f"\nSuccessfully processed and saved data to {savepath}")
+
+
+
+############  READ INS Rawdata files ######
+def read_data(data_path, file_labels, cols_raw):
+    """Reads and processes original scan files."""
+    data_all = pd.DataFrame()
+    print("Reading original data...")
+    for filename, (delta, temp) in file_labels.items():
+        file_path = os.path.join(data_path, filename)
+        data = pd.read_csv(file_path, delim_whitespace=True, skiprows=58, header=0, usecols=cols_raw)
+        data["$\\Delta$"] = float(delta)
+        data["CNTS_normalized"] = data["CNTS"] / data["M1"]
+        data["CNTS_err"] = np.sqrt(data["CNTS"]) / data["M1"]
+        data_all = pd.concat([data_all, data], ignore_index=True)
+    return data_all
+
+
+##############  READ Takin Output Simulation Results #####################
+def read_data_takin(data_path, file_labels, cols_takin, scale, offset):
+    """Reads and processes takin simulation data."""
+    data_all_takin = pd.DataFrame()
+    print("Reading takin simulation data...")
+    for filename, (delta, temp) in file_labels.items():
+        file_path = os.path.join(data_path, filename)
+        data = pd.read_csv(file_path, delim_whitespace=True, header=None, comment='#', names=cols_takin)
+        data["CNTS_normalized"] = data["S(Q,E)"] * scale + offset
+        data["$\\Delta$"] = float(delta)
+        data_all_takin = pd.concat([data_all_takin, data], ignore_index=True)
+    return data_all_takin
+
+
+################## overplot in 2D ##################
+def plot_2d_data(data_all, data_all_takin, params, output_filepath):
+    """Generates and saves a 2D plot."""
+    plt.figure(figsize=(10, 6))
+    # Plot original data if available
+    if not data_all.empty:
+        plt.errorbar(x=data_all['EN'], y=data_all['CNTS_normalized'], yerr=data_all['CNTS_err'],
+                    fmt='none', capsize=1.5, lw=0.5, alpha=0.7)
+        sns.scatterplot(data=data_all, x="EN", y="CNTS_normalized",
+                        style="$\\Delta$", markers=True,
+                        hue="$\\Delta$", palette="viridis",
+                        s=80, alpha=0.8)
+        
+    # Plot takin data if available
+    if not data_all_takin.empty:
+        sns.lineplot(data=data_all_takin, x='E', y='CNTS_normalized',
+                    hue='$\\Delta$', palette="viridis",
+                    legend=False, alpha=0.6)
+        
+    # plot settings
+    plt.title(params['title_2d'], pad=15)
+    plt.xlabel(r'Energy (meV)')
+    plt.ylabel(r'Scattered Intensity (normalized)')
+    plt.xlim(params['xmin'], params['xmax'])
+    plt.ylim(params['ymin'], params['ymax'])
+    plt.xticks(np.arange(params['xmin'], params['xmax'], step=params['xx']))
+    plt.yticks(np.arange(params['ymin'], params['ymax'], step=params['yy']))
+    plt.grid(alpha=0.5, linestyle='-.', lw=1.5)
+    
+    plt.savefig(output_filepath, dpi=900, transparent=True)
+    plt.show()
+    print(f"2D plot saved to {output_filepath}")
+
+
+##################  overplot in 3D #################
+def plot_3d_data(data_all, data_all_takin, params, output_filepath):
+    """Generates and saves a 3D plot."""
+    fig = plt.figure(figsize=(9, 9))
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plot original data if available
+    if not data_all.empty:
+        ax.errorbar(x=data_all['EN'], y=data_all['$\\Delta$'], z=data_all['CNTS_normalized'],
+                    zerr=data_all['CNTS_err'], fmt='none', capsize=1.5, lw=0.2, color='lightblue', alpha=0.7)
+        g = ax.scatter(data_all['EN'], data_all['$\\Delta$'], data_all['CNTS_normalized'],
+                       c=data_all['$\\Delta$'], cmap="viridis", s=15)
+        legend = ax.legend(*g.legend_elements(), bbox_to_anchor=(0.72, 0.85), loc=2)
+        ax.add_artist(legend)
+
+    # Plot takin data if available
+    if not data_all_takin.empty:
+        ax.scatter(data_all_takin['E'], data_all_takin['$\\Delta$'], data_all_takin['CNTS_normalized'],
+                   c=data_all_takin['$\\Delta$'], cmap="viridis", s=0.2, alpha=0.5)
+
+    # plot settings
+    ax.set_title(params['title_3d'], pad=15)
+    ax.set_xlabel(r'Energy (meV)')
+    ax.set_ylabel(r'$\Delta$*[1-10] for phonon propagation')
+    ax.set_zlabel(r'Scattered Intensity (normalized)')
+    ax.set_xlim(params['xmin'], params['xmax'])
+    ax.set_ylim(-0.070, 0.0)
+    ax.set_zlim(params['ymin'], 0.0018)
+    ax.set_xticks(np.arange(params['xmin'], params['xmax'], step=params['xx']))
+    ax.set_yticks(np.arange(-0.070, 0.0, step=0.015))
+    ax.set_zticks(np.arange(params['ymin'], params['ymax'], step=params['yy']))
+    ax.set_box_aspect(aspect=(1.8, 1.2, 1.2))
+
+    plt.savefig(output_filepath, dpi=900, transparent=True, bbox_inches='tight')
+    plt.show()
+    print(f"3D plot saved to {output_filepath}")
